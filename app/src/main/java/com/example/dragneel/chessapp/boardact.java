@@ -19,6 +19,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
     ImageView seliv[][] = new ImageView[8][8];
     ImageView backiv[][] = new ImageView[8][8];
     ImageView frontiv[][] = new ImageView[8][8];
+    int pawnmove[] = new int[64];
     public static int white = 1, black = -1;
     public static int me = white, bot = black , empty = 0, select = 1;
     int turn = white, itemhold = 0, holdid=0;
@@ -33,15 +34,30 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
 
     public void initboard(int board[][])
     {
-        board[0][0] = brook; board[0][1] = bknight; board[0][2] = bbishop; board[0][3] = bqueen;
-        board[0][4] = bking; board[0][5] = bbishop; board[0][6] = bknight; board[0][7] = brook;
-        board[1][0] = bpawn; board[1][1] = bpawn; board[1][2] = bpawn; board[1][3] = bpawn;
-        board[1][4] = bpawn; board[1][5] = bpawn; board[1][6] = bpawn; board[1][7] = bpawn;
+        //if(select == 1 || (select == 2 && me == white))
+        {
+            board[0][0] = brook; board[0][1] = bknight; board[0][2] = bbishop; board[0][3] = bqueen;
+            board[0][4] = bking; board[0][5] = bbishop; board[0][6] = bknight; board[0][7] = brook;
+            board[1][0] = bpawn; board[1][1] = bpawn; board[1][2] = bpawn; board[1][3] = bpawn;
+            board[1][4] = bpawn; board[1][5] = bpawn; board[1][6] = bpawn; board[1][7] = bpawn;
 
-        board[7][0] = wrook; board[7][1] = wknight; board[7][2] = wbishop; board[7][3] = wqueen;
-        board[7][4] = wking; board[7][5] = wbishop; board[7][6] = wknight; board[7][7] = wrook;
-        board[6][0] = wpawn; board[6][1] = wpawn; board[6][2] = wpawn; board[6][3] = wpawn;
-        board[6][4] = wpawn; board[6][5] = wpawn; board[6][6] = wpawn; board[6][7] = wpawn;
+            board[7][0] = wrook; board[7][1] = wknight; board[7][2] = wbishop; board[7][3] = wqueen;
+            board[7][4] = wking; board[7][5] = wbishop; board[7][6] = wknight; board[7][7] = wrook;
+            board[6][0] = wpawn; board[6][1] = wpawn; board[6][2] = wpawn; board[6][3] = wpawn;
+            board[6][4] = wpawn; board[6][5] = wpawn; board[6][6] = wpawn; board[6][7] = wpawn;
+        }
+        /*else if(select == 2 && me == black)
+        {
+            board[0][0] = wrook; board[0][1] = wknight; board[0][2] = wbishop; board[0][3] = wking;
+            board[0][4] = wqueen; board[0][5] = wbishop; board[0][6] = wknight; board[0][7] = wrook;
+            board[1][0] = wpawn; board[1][1] = wpawn; board[1][2] = wpawn; board[1][3] = wpawn;
+            board[1][4] = wpawn; board[1][5] = wpawn; board[1][6] = wpawn; board[1][7] = wpawn;
+
+            board[7][0] = brook; board[7][1] = bknight; board[7][2] = bbishop; board[7][3] = bking;
+            board[7][4] = bqueen; board[7][5] = bbishop; board[7][6] = bknight; board[7][7] = brook;
+            board[6][0] = bpawn; board[6][1] = bpawn; board[6][2] = bpawn; board[6][3] = bpawn;
+            board[6][4] = bpawn; board[6][5] = bpawn; board[6][6] = bpawn; board[6][7] = bpawn;
+        }*/
     }
 
     @Override
@@ -58,7 +74,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
             }
         }
         initboard(board);
-        itemhold = 0; holdid= 0;
+        itemhold = 0; holdid= 0; turn = white;
 
         //getting the screen size in pixel
         Display display = getWindowManager().getDefaultDisplay();
@@ -87,18 +103,44 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
                 backiv[i][j].setLayoutParams(new LinearLayout.LayoutParams(min/9, min/9));
                 frontiv[i][j].setLayoutParams(new LinearLayout.LayoutParams(min/9, min/9));
                 seliv[i][j].setLayoutParams(new LinearLayout.LayoutParams(min/9, min/9));
-                if((i+j)%2 == 0) backiv[i][j].setBackgroundResource(R.drawable.bcell);
-                else backiv[i][j].setBackgroundResource(R.drawable.wcell);
+                if((i+j)%2 == 0) backiv[i][j].setBackgroundResource(R.drawable.wcell);
+                else backiv[i][j].setBackgroundResource(R.drawable.bcell);
                 frontiv[i][j].setId(n*i+j);
                 seliv[i][j].setBackgroundResource(R.drawable.trans);
+                pawnmove[n*i+j] = 0;
                 setfrontiv(i,j);
                 innerframe[i][j].addView(backiv[i][j]);
                 innerframe[i][j].addView(seliv[i][j]);
                 innerframe[i][j].addView(frontiv[i][j]);
-                glayout.addView(innerframe[i][j]);
+                //glayout.addView(innerframe[i][j]);
+
+
                 frontiv[i][j].setOnClickListener(this);
             }
         }
+        if(select == 2 && me == black)
+        {
+            for(int i=n-1; i>=0; i--)
+            {
+                for(int j=n-1; j>=0; j--)
+                {
+                    glayout.addView(innerframe[i][j]);
+                }
+            }
+        }
+        else
+        {
+            for(int i=0; i<n; i++)
+            {
+                for(int j=0; j<n; j++)
+                {
+                    glayout.addView(innerframe[i][j]);
+                }
+            }
+        }
+
+        // if the bot has the first turn, then perform its action here
+
     }
     // set image on front
     public void setfrontiv(int i, int j)
@@ -109,16 +151,162 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
         else if(board[i][j] == 3) frontiv[i][j].setBackgroundResource(R.drawable.wrook);
         else if(board[i][j] == 4) frontiv[i][j].setBackgroundResource(R.drawable.wknight);
         else if(board[i][j] == 5) frontiv[i][j].setBackgroundResource(R.drawable.wbishop);
-        else if(board[i][j] == 6) frontiv[i][j].setBackgroundResource(R.drawable.wpawn);
+        else if(board[i][j] == 6)
+        {
+            frontiv[i][j].setBackgroundResource(R.drawable.wpawn);
+            pawnmove[n*i+j] = 1;
+        }
 
         else if(board[i][j] == -1) frontiv[i][j].setBackgroundResource(R.drawable.bking);
         else if(board[i][j] == -2) frontiv[i][j].setBackgroundResource(R.drawable.bqueen);
         else if(board[i][j] == -3) frontiv[i][j].setBackgroundResource(R.drawable.brook);
         else if(board[i][j] == -4) frontiv[i][j].setBackgroundResource(R.drawable.bknight);
         else if(board[i][j] == -5) frontiv[i][j].setBackgroundResource(R.drawable.bbishop);
-        else if(board[i][j] == -6) frontiv[i][j].setBackgroundResource(R.drawable.bpawn);
+        else if(board[i][j] == -6)
+        {
+            frontiv[i][j].setBackgroundResource(R.drawable.bpawn);
+            pawnmove[n*i+j] = -1;
+        }
+
 
     }
+
+    int sign(int val)
+    {
+        if(val > 0) return 1;
+        else if(val<0) return -1;
+        else return 0;
+    }
+
+    void moveknight(int i1, int j1, int i2, int j2, int val) // val is the piece value
+    {
+        int disti = Math.abs(i1-i2), distj = Math.abs(j1-j2);
+        if( Math.max(disti,distj) == 2 && Math.min(disti,distj) == 1)
+        {
+            // move is possible, make the move
+            board[i1][j1] = 0; board[i2][j2] = wknight*turn;
+            frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+            if(val<0) frontiv[i2][j2].setBackgroundResource(R.drawable.bknight);
+            else frontiv[i2][j2].setBackgroundResource(R.drawable.wknight);
+            seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+            seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+            holdid = n*i2+j2;
+            turn*=-1;
+        }
+    }
+
+    void movebishop(int i1, int j1, int i2, int j2, int val)
+    {
+        int difi = sign(i2-i1), difj = sign(j2-j1);
+        if(Math.abs(difi) == Math.abs(difj))
+        {
+            int tempi = i1 + difi, tempj = j1 + difj;
+            while( (tempi>=0 && tempi<n) && (tempj>=0 && tempj<n))
+            {
+                if(tempi == i2 && tempj == j2)
+                {
+                    // move the bishop
+                    board[i1][j1] = 0; board[i2][j2] = wbishop*turn;
+                    frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    if(val<0) frontiv[i2][j2].setBackgroundResource(R.drawable.bbishop);
+                    else frontiv[i2][j2].setBackgroundResource(R.drawable.wbishop);
+                    seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+                    holdid = n*i2+j2;
+                    turn*=-1;
+
+                }
+                else if(board[tempi][tempj] !=0) break;
+                tempi += difi; tempj += difj;
+            }
+        }
+
+
+    }
+
+    void movequeen(int i1, int j1, int i2, int j2, int val)
+    {
+        int difi = sign(i2-i1), difj = sign(j2-j1);
+        if( (Math.abs(difi) == Math.abs(difj)) || (Math.min(Math.abs(difi), Math.abs(difj)) == 0) )
+        {
+            int tempi = i1 + difi, tempj = j1 + difj;
+            while( (tempi>=0 && tempi<n) && (tempj>=0 && tempj<n))
+            {
+                if(tempi == i2 && tempj == j2)
+                {
+                    // move the queen
+                    board[i1][j1] = 0; board[i2][j2] = wqueen*turn;
+                    frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    if(val<0) frontiv[i2][j2].setBackgroundResource(R.drawable.bqueen);
+                    else frontiv[i2][j2].setBackgroundResource(R.drawable.wqueen);
+                    seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+                    holdid = n*i2+j2;
+                    turn*=-1;
+
+                }
+                else if(board[tempi][tempj] !=0) break;
+                tempi += difi; tempj += difj;
+            }
+        }
+    }
+
+    public void movepawn(int i1, int i2, int j1, int j2, int val)
+    {
+        int flag = 0;
+        if(turn > 0) // white's move
+        {
+            if(i1 - i2 == 2 && j1==j2)
+            {
+                if(pawnmove[i1*n+j1] == turn && board[i1-1][j1] == 0 && board[i1-2][j1] == 0) flag = 1;
+                    // 2 step move is possible;
+            }
+            else if((i1-i2) == 1)         // moving one step
+            {
+                // straight move
+                if(j1 == j2 && board[i1-1][j1] == 0) flag = 1;
+                else if(j1-j2 == 1 & sign(board[i1-1][j1-1]) == sign(-turn)) flag = 1; // move upleft
+                else if(j2-j1 == 1 & sign(board[i1-1][j1+1]) == sign(-turn)) flag = 1; // move upright
+            }
+        }
+        else if(turn < 0) // black's move
+        {
+            if(i2 - i1 == 2 && j1==j2)
+            {
+                if(pawnmove[i1*n+j1] == turn && board[i1+1][j1] == 0 && board[i1+2][j1] == 0) flag = 1;
+                    // 2 step move is possible;
+            }
+            else if((i2-i1) == 1)         // moving one step
+            {
+                if(j1 == j2 && board[i1+1][j1] == 0) flag = 1; // straight move
+                else if(j1-j2 == 1 & sign(board[i1+1][j1-1]) == sign(-turn)) flag = 1; // move downleft
+                else if(j2-j1 == 1 & sign(board[i1+1][j1+1]) == sign(-turn)) flag = 1; // move downright
+            }
+        }
+
+        if(flag == 1)
+        {
+            board[i1][j1] = 0; board[i2][j2] = wpawn*turn;
+            frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+            if(val<0) frontiv[i2][j2].setBackgroundResource(R.drawable.bpawn);
+            else frontiv[i2][j2].setBackgroundResource(R.drawable.wpawn);
+            seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+            seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+            holdid = n*i2+j2;
+            turn*=-1;
+        }
+    }
+
+    void playmove(int i1, int j1, int i2, int j2)
+    {
+        int val = board[i1][j1];
+        if(val == wknight*turn) moveknight(i1,j1,i2,j2,val);
+        else if(val == wbishop*turn) movebishop(i1,j1,i2,j2,val);
+        else if(val == wqueen*turn) movequeen(i1,j1,i2,j2,val);
+        else if(val == wpawn*turn) movepawn(i1,i2,j1,j2,val);
+
+    }
+
 
     @Override
     public void onClick(View v)
@@ -129,10 +317,63 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
         if(turn == me)
         {
 
+            if(itemhold == 0)
+            {
+
+                if( sign(board[curi][curj]) == sign(turn))
+                {
+                    itemhold = 1; holdid = id;
+                    seliv[curi][curj].setBackgroundResource(R.drawable.downsel);
+                }
+            }
+            else
+            {
+                int holdi = holdid/n, holdj = holdid%n;
+                if(sign(board[curi][curj]) == sign(turn))
+                {
+                    itemhold = 1;
+                    holdid = id;
+                    seliv[holdi][holdj].setBackgroundResource(R.drawable.trans);
+                    seliv[curi][curj].setBackgroundResource(R.drawable.downsel);
+                }
+                else
+                {
+                    // make the move if possible
+                    playmove(holdi, holdj,curi,curj);
+
+                }
+
+            }
         }
         else // turn == bot
         {
 
+            if(itemhold == 0)
+            {
+                if( sign(board[curi][curj]) == sign(turn))
+                {
+                    itemhold = 1; holdid = id;
+                    seliv[curi][curj].setBackgroundResource(R.drawable.downsel);
+                }
+            }
+            else
+            {
+                int holdi = holdid/n, holdj = holdid%n;
+                if(sign(board[curi][curj]) == sign(turn))
+                {
+                    itemhold = 1;
+                    holdid = id;
+                    seliv[holdi][holdj].setBackgroundResource(R.drawable.trans);
+                    seliv[curi][curj].setBackgroundResource(R.drawable.downsel);
+                }
+                else
+                {
+                    // make the move if possible
+                    playmove(holdi, holdj,curi,curj);
+
+                }
+
+            }
         }
 
     }
