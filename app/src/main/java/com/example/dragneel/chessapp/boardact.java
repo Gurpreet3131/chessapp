@@ -20,9 +20,10 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
     ImageView backiv[][] = new ImageView[8][8];
     ImageView frontiv[][] = new ImageView[8][8];
     int pawnmove[] = new int[64];
+    int rookmove[] = new int[64];
     public static int white = 1, black = -1;
     public static int me = white, bot = black , empty = 0, select = 1;
-    int turn = white, itemhold = 0, holdid=0;
+    int turn = white, itemhold = 0, holdid=0, npassi = -1, npassj = -1, npassflag=0, kingmove = 0;
     public static int bking = -1, bqueen = -2, brook = -3, bknight = -4, bbishop = -5, bpawn = -6;
     public static int wking = 1, wqueen = 2, wrook = 3, wknight = 4, wbishop = 5, wpawn = 6;
 
@@ -74,7 +75,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
             }
         }
         initboard(board);
-        itemhold = 0; holdid= 0; turn = white;
+        itemhold = 0; holdid= 0; turn = white; npassflag = 0; kingmove = 0;
 
         //getting the screen size in pixel
         Display display = getWindowManager().getDefaultDisplay();
@@ -107,7 +108,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
                 else backiv[i][j].setBackgroundResource(R.drawable.bcell);
                 frontiv[i][j].setId(n*i+j);
                 seliv[i][j].setBackgroundResource(R.drawable.trans);
-                pawnmove[n*i+j] = 0;
+                pawnmove[n*i+j] = 0; rookmove[n*i+j] = 0;
                 setfrontiv(i,j);
                 innerframe[i][j].addView(backiv[i][j]);
                 innerframe[i][j].addView(seliv[i][j]);
@@ -138,7 +139,6 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
                 }
             }
         }
-
         // if the bot has the first turn, then perform its action here
 
     }
@@ -148,7 +148,11 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
         if(board[i][j] == 0) frontiv[i][j].setBackgroundResource(R.drawable.trans);
         else if(board[i][j] == 1) frontiv[i][j].setBackgroundResource(R.drawable.wking);
         else if(board[i][j] == 2) frontiv[i][j].setBackgroundResource(R.drawable.wqueen);
-        else if(board[i][j] == 3) frontiv[i][j].setBackgroundResource(R.drawable.wrook);
+        else if(board[i][j] == 3)
+        {
+            frontiv[i][j].setBackgroundResource(R.drawable.wrook);
+            rookmove[n*i+j] = 1;
+        }
         else if(board[i][j] == 4) frontiv[i][j].setBackgroundResource(R.drawable.wknight);
         else if(board[i][j] == 5) frontiv[i][j].setBackgroundResource(R.drawable.wbishop);
         else if(board[i][j] == 6)
@@ -159,7 +163,11 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
 
         else if(board[i][j] == -1) frontiv[i][j].setBackgroundResource(R.drawable.bking);
         else if(board[i][j] == -2) frontiv[i][j].setBackgroundResource(R.drawable.bqueen);
-        else if(board[i][j] == -3) frontiv[i][j].setBackgroundResource(R.drawable.brook);
+        else if(board[i][j] == -3)
+        {
+            frontiv[i][j].setBackgroundResource(R.drawable.brook);
+            rookmove[n*i+j] = -1;
+        }
         else if(board[i][j] == -4) frontiv[i][j].setBackgroundResource(R.drawable.bknight);
         else if(board[i][j] == -5) frontiv[i][j].setBackgroundResource(R.drawable.bbishop);
         else if(board[i][j] == -6)
@@ -167,8 +175,6 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
             frontiv[i][j].setBackgroundResource(R.drawable.bpawn);
             pawnmove[n*i+j] = -1;
         }
-
-
     }
 
     int sign(int val)
@@ -191,7 +197,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
             seliv[i1][j1].setBackgroundResource(R.drawable.trans);
             seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
             holdid = n*i2+j2;
-            turn*=-1;
+            turn*=-1; npassflag = 0;
         }
     }
 
@@ -213,7 +219,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
                     seliv[i1][j1].setBackgroundResource(R.drawable.trans);
                     seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
                     holdid = n*i2+j2;
-                    turn*=-1;
+                    turn*=-1; npassflag = 0;
 
                 }
                 else if(board[tempi][tempj] !=0) break;
@@ -242,7 +248,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
                     seliv[i1][j1].setBackgroundResource(R.drawable.trans);
                     seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
                     holdid = n*i2+j2;
-                    turn*=-1;
+                    turn*=-1; npassflag = 0;
 
                 }
                 else if(board[tempi][tempj] !=0) break;
@@ -251,6 +257,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
         }
     }
 
+
     public void movepawn(int i1, int i2, int j1, int j2, int val)
     {
         int flag = 0;
@@ -258,33 +265,49 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
         {
             if(i1 - i2 == 2 && j1==j2)
             {
-                if(pawnmove[i1*n+j1] == turn && board[i1-1][j1] == 0 && board[i1-2][j1] == 0) flag = 1;
+                if(pawnmove[i1*n+j1] == turn && board[i1-1][j1] == 0 && board[i1-2][j1] == 0)
+                {
+                    flag = 3; npassflag = 1; npassi = i2; npassj = j2;
+                }
                     // 2 step move is possible;
             }
             else if((i1-i2) == 1)         // moving one step
             {
                 // straight move
-                if(j1 == j2 && board[i1-1][j1] == 0) flag = 1;
-                else if(j1-j2 == 1 & sign(board[i1-1][j1-1]) == sign(-turn)) flag = 1; // move upleft
-                else if(j2-j1 == 1 & sign(board[i1-1][j1+1]) == sign(-turn)) flag = 1; // move upright
+                if(j1 == j2 && board[i2][j2] == 0) flag = 1;
+                else if(j1-j2 == 1 & sign(board[i2][j2]) == sign(-turn)) flag = 1; // move upleft
+                else if(j2-j1 == 1 & sign(board[i2][j2]) == sign(-turn)) flag = 1; // move upright
+                else if(npassflag == 1)
+                {
+                    if(j1-j2 == 1 & board[i2][j2] == 0 & ( npassi == i1 && npassj == j1-1) ) flag = 2;
+                    else if(j2-j1 == 1 & board[i2][j2] == 0 & ( npassi == i1 && npassj == j1+1) ) flag = 2;
+                }
             }
         }
         else if(turn < 0) // black's move
         {
             if(i2 - i1 == 2 && j1==j2)
             {
-                if(pawnmove[i1*n+j1] == turn && board[i1+1][j1] == 0 && board[i1+2][j1] == 0) flag = 1;
+                if(pawnmove[i1*n+j1] == turn && board[i1+1][j1] == 0 && board[i1+2][j1] == 0)
+                {
+                    flag = 3; npassflag = 1; npassi = i2; npassj = j2;
+                }
                     // 2 step move is possible;
             }
             else if((i2-i1) == 1)         // moving one step
             {
-                if(j1 == j2 && board[i1+1][j1] == 0) flag = 1; // straight move
-                else if(j1-j2 == 1 & sign(board[i1+1][j1-1]) == sign(-turn)) flag = 1; // move downleft
-                else if(j2-j1 == 1 & sign(board[i1+1][j1+1]) == sign(-turn)) flag = 1; // move downright
+                if(j1 == j2 && board[i2][j2] == 0) flag = 1; // straight move
+                else if(j1-j2 == 1 & sign(board[i2][j2]) == sign(-turn)) flag = 1; // move downleft
+                else if(j2-j1 == 1 & sign(board[i2][j2]) == sign(-turn)) flag = 1; // move downright
+                else if(npassflag == 1)
+                {
+                    if(j1-j2 == 1 & board[i2][j2] == 0 & ( npassi == i1 && npassj == j1-1) ) flag = 2;
+                    else if(j2-j1 == 1 & board[i2][j2] == 0 & ( npassi == i1 && npassj == j1+1) ) flag = 2;
+                }
             }
         }
 
-        if(flag == 1)
+        if(flag == 1 || flag == 3)
         {
             board[i1][j1] = 0; board[i2][j2] = wpawn*turn;
             frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
@@ -293,7 +316,68 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
             seliv[i1][j1].setBackgroundResource(R.drawable.trans);
             seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
             holdid = n*i2+j2;
-            turn*=-1;
+            turn*=-1; npassflag = 0;
+            if(flag == 3) npassflag = 1; // double move
+        }
+        else if(flag == 2) // npassent rule move
+        {
+            board[i1][j1] = 0; board[i2][j2] = wpawn*turn; board[i1][j2] = 0;
+            frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+            frontiv[i1][j2].setBackgroundResource(R.drawable.trans);
+            if(val<0) frontiv[i2][j2].setBackgroundResource(R.drawable.bpawn);
+            else frontiv[i2][j2].setBackgroundResource(R.drawable.wpawn);
+            seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+            seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+            holdid = n*i2+j2;
+            turn*=-1; npassflag = 0;
+        }
+    }
+
+    public void moverook(int i1, int j1, int i2, int j2, int val)
+    {
+        int difi = sign(i2-i1), difj = sign(j2-j1);
+        if( (Math.min(Math.abs(difi), Math.abs(difj)) == 0) )
+        {
+            int tempi = i1 + difi, tempj = j1 + difj;
+            while( (tempi>=0 && tempi<n) && (tempj>=0 && tempj<n))
+            {
+                if(tempi == i2 && tempj == j2)
+                {
+                    // move the rook
+                    board[i1][j1] = 0; board[i2][j2] = wrook*turn;
+                    frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    if(val<0) frontiv[i2][j2].setBackgroundResource(R.drawable.brook);
+                    else frontiv[i2][j2].setBackgroundResource(R.drawable.wrook);
+                    seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+                    holdid = n*i2+j2; rookmove[n*i1+j1] = 0;
+                    turn*=-1; npassflag = 0;
+                }
+                else if(board[tempi][tempj] !=0) break;
+                tempi += difi; tempj += difj;
+            }
+        }
+    }
+
+    public void moveking(int i1, int j1, int i2, int j2, int val)
+    {
+        int difi = Math.abs(i2-i1), difj = Math.abs(j2-j1);
+        if(Math.max(difi,difj) == 1)
+        {
+            // move the king
+            board[i1][j1] = 0; board[i2][j2] = wking*turn;
+            frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+            if(val<0) frontiv[i2][j2].setBackgroundResource(R.drawable.bking);
+            else frontiv[i2][j2].setBackgroundResource(R.drawable.wking);
+            seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+            seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+            holdid = n*i2+j2;
+            turn*=-1; npassflag = 0;
+               
+        }
+        else
+        {
+
         }
     }
 
@@ -304,7 +388,9 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
         else if(val == wbishop*turn) movebishop(i1,j1,i2,j2,val);
         else if(val == wqueen*turn) movequeen(i1,j1,i2,j2,val);
         else if(val == wpawn*turn) movepawn(i1,i2,j1,j2,val);
-
+        else if(val == wrook*turn) moverook(i1,j1,i2,j2,val);
+        else if(val == wking*turn) moveking(i1,j1,i2,j2,val);
+        // remember to make npassflag zero in all moves
     }
 
 
@@ -316,10 +402,8 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
         int curi = id/n, curj = id%n;
         if(turn == me)
         {
-
             if(itemhold == 0)
             {
-
                 if( sign(board[curi][curj]) == sign(turn))
                 {
                     itemhold = 1; holdid = id;
@@ -340,9 +424,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
                 {
                     // make the move if possible
                     playmove(holdi, holdj,curi,curj);
-
                 }
-
             }
         }
         else // turn == bot
@@ -370,11 +452,8 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
                 {
                     // make the move if possible
                     playmove(holdi, holdj,curi,curj);
-
                 }
-
             }
         }
-
     }
 }
