@@ -9,7 +9,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button playbutton, botplaybutton, settingbutton;
-
+    public boardact bobj;
 
 
     @Override
@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         settingbutton = (Button) findViewById(R.id.settingbutton);
         settingbutton.setOnClickListener(this);
 
+        bobj = new boardact();
+
     }
 
     @Override
@@ -33,12 +35,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(view.getId() == R.id.playbutton)
         {
+            bobj.me = bobj.white; bobj.bot = bobj.black;
+            bobj.select = 1;
             Intent in = new Intent(this, boardact.class);
             startActivity(in);
         }
         else if(view.getId() == R.id.botplaybutton)
         {
-            Intent in = new Intent(this, boardact.class);
+            bobj.select = 2;
+            bobj.me = bobj.white; bobj.bot = bobj.black;
+            Intent in = new Intent(this, choice.class);
             startActivity(in);
         }
         else if(view.getId() == R.id.settingbutton)

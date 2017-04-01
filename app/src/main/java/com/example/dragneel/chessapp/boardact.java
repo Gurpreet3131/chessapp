@@ -19,6 +19,12 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
     ImageView seliv[][] = new ImageView[8][8];
     ImageView backiv[][] = new ImageView[8][8];
     ImageView frontiv[][] = new ImageView[8][8];
+    public static int white = 1, black = -1;
+    public static int me = white, bot = black , empty = 0, select = 1;
+    int turn = white, itemhold = 0, holdid=0;
+    public static int bking = -1, bqueen = -2, brook = -3, bknight = -4, bbishop = -5, bpawn = -6;
+    public static int wking = 1, wqueen = 2, wrook = 3, wknight = 4, wbishop = 5, wpawn = 6;
+
 
 
     int n = 8;
@@ -27,15 +33,15 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
 
     public void initboard(int board[][])
     {
-        board[0][0] = -3; board[0][1] = -4; board[0][2] = -5; board[0][3] = -2;
-        board[0][4] = -1; board[0][5] = -5; board[0][6] = -4; board[0][7] = -3;
-        board[1][0] = -6; board[1][1] = -6; board[1][2] = -6; board[1][3] = -6;
-        board[1][4] = -6; board[1][5] = -6; board[1][6] = -6; board[1][7] = -6;
+        board[0][0] = brook; board[0][1] = bknight; board[0][2] = bbishop; board[0][3] = bqueen;
+        board[0][4] = bking; board[0][5] = bbishop; board[0][6] = bknight; board[0][7] = brook;
+        board[1][0] = bpawn; board[1][1] = bpawn; board[1][2] = bpawn; board[1][3] = bpawn;
+        board[1][4] = bpawn; board[1][5] = bpawn; board[1][6] = bpawn; board[1][7] = bpawn;
 
-        board[7][0] = 3; board[7][1] = 4; board[7][2] = 5; board[7][3] = 2;
-        board[7][4] = 1; board[7][5] = 5; board[7][6] = 4; board[7][7] = 3;
-        board[6][0] = 6; board[6][1] = 6; board[6][2] = 6; board[6][3] = 6;
-        board[6][4] = 6; board[6][5] = 6; board[6][6] = 6; board[6][7] = 6;
+        board[7][0] = wrook; board[7][1] = wknight; board[7][2] = wbishop; board[7][3] = wqueen;
+        board[7][4] = wking; board[7][5] = wbishop; board[7][6] = wknight; board[7][7] = wrook;
+        board[6][0] = wpawn; board[6][1] = wpawn; board[6][2] = wpawn; board[6][3] = wpawn;
+        board[6][4] = wpawn; board[6][5] = wpawn; board[6][6] = wpawn; board[6][7] = wpawn;
     }
 
     @Override
@@ -52,6 +58,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
             }
         }
         initboard(board);
+        itemhold = 0; holdid= 0;
 
         //getting the screen size in pixel
         Display display = getWindowManager().getDefaultDisplay();
@@ -114,7 +121,19 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View v)
+    {
+        ImageView cur = (ImageView) v;
+        int id = cur.getId();
+        int curi = id/n, curj = id%n;
+        if(turn == me)
+        {
+
+        }
+        else // turn == bot
+        {
+
+        }
 
     }
 }

@@ -15,7 +15,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".boardact"></activity>
+        <activity android:name=".boardact" />
+        <activity android:name=".choice"></activity>
     </application>
 
 </manifest>
