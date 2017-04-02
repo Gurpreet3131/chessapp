@@ -23,7 +23,8 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
     int rookmove[] = new int[64];
     public static int white = 1, black = -1;
     public static int me = white, bot = black , empty = 0, select = 1;
-    int turn = white, itemhold = 0, holdid=0, npassi = -1, npassj = -1, npassflag=0, kingmove = 0;
+    int turn = white, itemhold = 0, holdid=0, npassi = -1, npassj = -1, npassflag=0;
+    int wkingmove = 0, bkingmove=0, bkingcheck=0, wkingcheck=0;
     public static int bking = -1, bqueen = -2, brook = -3, bknight = -4, bbishop = -5, bpawn = -6;
     public static int wking = 1, wqueen = 2, wrook = 3, wknight = 4, wbishop = 5, wpawn = 6;
 
@@ -75,7 +76,9 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
             }
         }
         initboard(board);
-        itemhold = 0; holdid= 0; turn = white; npassflag = 0; kingmove = 0;
+        itemhold = 0; holdid= 0; turn = white; npassflag = 0;
+        wkingmove = 0; bkingmove=0; // for castling
+        bkingcheck = 0; wkingcheck = 0;
 
         //getting the screen size in pixel
         Display display = getWindowManager().getDefaultDisplay();
@@ -372,12 +375,106 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
             seliv[i1][j1].setBackgroundResource(R.drawable.trans);
             seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
             holdid = n*i2+j2;
+            if(turn > 0) wkingmove = 1;
+            else bkingmove = 1;
             turn*=-1; npassflag = 0;
-               
-        }
-        else
-        {
 
+        }
+        else if(turn > 0 && wkingmove == 0)
+        {
+            if(i2 == i1 && j1 - j2 == 2) //left castling
+            {
+                 if(board[i1][j1-1] == 0 && board[i1][j1-3] == 0 && board[i2][j2] == 0
+                         && board[i2][j2-2] == wrook*turn && rookmove[i2*n+(j2-2)] == 1*turn)
+                 {
+                     // perform left castling
+                     board[i1][j1] = 0; board[i2][j2] = wking*turn;
+                     board[i2][j2+1] = wrook*turn; board[i2][j2-2] = 0;
+
+                     frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+                     if(val<0) frontiv[i2][j2].setBackgroundResource(R.drawable.bking);
+                     else frontiv[i2][j2].setBackgroundResource(R.drawable.wking);
+                     frontiv[i2][j2+1].setBackgroundResource(R.drawable.wrook);
+                     frontiv[i2][j2-2].setBackgroundResource(R.drawable.trans);
+
+                     seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+                     seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+                     holdid = n*i2+j2; rookmove[n*i2+(j2-2)] = 0;
+                     if(turn > 0) wkingmove = 1;
+                     else bkingmove = 1;
+                     turn*=-1; npassflag = 0;
+                 }
+            }
+            else if(i2 == i1 && j2-j1 == 2) // right castling
+            {
+                if(board[i1][j1+1] == 0 && board[i2][j2] == 0
+                        && board[i2][j2+1] == wrook*turn && rookmove[i2*n+(j2+1)] == 1*turn)
+                {
+                    // perform left castling
+                    board[i1][j1] = 0; board[i2][j2] = wking*turn;
+                    board[i2][j2-1] = wrook*turn; board[i2][j2+1] = 0;
+
+                    frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    if(val<0) frontiv[i2][j2].setBackgroundResource(R.drawable.bking);
+                    else frontiv[i2][j2].setBackgroundResource(R.drawable.wking);
+                    frontiv[i2][j2-1].setBackgroundResource(R.drawable.wrook);
+                    frontiv[i2][j2+1].setBackgroundResource(R.drawable.trans);
+
+                    seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+                    holdid = n*i2+j2; rookmove[n*i2+(j2+1)] = 0;
+                    if(turn > 0) wkingmove = 1;
+                    else bkingmove = 1;
+                    turn*=-1; npassflag = 0;
+                }
+            }
+        }
+        else if(turn < 0 && bkingmove == 0)
+        {
+            if (i2 == i1 && j1 - j2 == 2) //left castling
+            {
+                if (board[i1][j1 - 1] == 0 && board[i1][j1 - 3] == 0 && board[i2][j2] == 0
+                        && board[i2][j2 - 2] == wrook * turn && rookmove[i2 * n + (j2 - 2)] == 1*turn) {
+                    // perform left castling
+                    board[i1][j1] = 0; board[i2][j2] = wking * turn;
+                    board[i2][j2 + 1] = wrook * turn; board[i2][j2 - 2] = 0;
+
+                    frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    if (val < 0) frontiv[i2][j2].setBackgroundResource(R.drawable.bking);
+                    else frontiv[i2][j2].setBackgroundResource(R.drawable.wking);
+                    frontiv[i2][j2 + 1].setBackgroundResource(R.drawable.brook);
+                    frontiv[i2][j2 - 2].setBackgroundResource(R.drawable.trans);
+
+                    seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+                    holdid = n * i2 + j2; rookmove[n * i2 + (j2 - 2)] = 0;
+                    if (turn > 0) wkingmove = 1;
+                    else bkingmove = 1;
+                    turn *= -1; npassflag = 0;
+                }
+            }
+            else if (i2 == i1 && j2 - j1 == 2) // right castling
+            {
+                if (board[i1][j1 + 1] == 0 && board[i2][j2] == 0
+                        && board[i2][j2 + 1] == wrook * turn && rookmove[i2 * n + (j2 + 1)] == 1*turn) {
+                    // perform left castling
+                    board[i1][j1] = 0; board[i2][j2] = wking * turn;
+                    board[i2][j2 - 1] = wrook * turn; board[i2][j2 + 1] = 0;
+
+                    frontiv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    if (val < 0) frontiv[i2][j2].setBackgroundResource(R.drawable.bking);
+                    else frontiv[i2][j2].setBackgroundResource(R.drawable.wking);
+                    frontiv[i2][j2 - 1].setBackgroundResource(R.drawable.brook);
+                    frontiv[i2][j2 + 1].setBackgroundResource(R.drawable.trans);
+
+                    seliv[i1][j1].setBackgroundResource(R.drawable.trans);
+                    seliv[i2][j2].setBackgroundResource(R.drawable.downsel);
+                    holdid = n * i2 + j2; rookmove[n * i2 + (j2 + 1)] = 0;
+                    if (turn > 0) wkingmove = 1;
+                    else bkingmove = 1;
+                    turn *= -1; npassflag = 0;
+                }
+            }
         }
     }
 
@@ -391,6 +488,59 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
         else if(val == wrook*turn) moverook(i1,j1,i2,j2,val);
         else if(val == wking*turn) moveking(i1,j1,i2,j2,val);
         // remember to make npassflag zero in all moves
+    }
+
+    public int checkdir(int turn, int b[][], int tempi, int tempj, int inci, int incj)
+    {
+        int checkresult = 0; int ss = sign(-turn);
+        tempi += inci; tempj += incj;
+        while((tempi>=0 && tempi<n) && (tempj>=0 && tempj<n))
+        {
+            if( sign(b[tempi][tempj]) == sign(turn)) break;
+            else if(b[tempi][tempj] == 0) { tempi+= inci; tempj+=incj; }
+            else if(sign(b[tempi][tempj]) == sign(-turn))
+            {
+                if(b[tempi][tempj] == wqueen*ss) {checkresult = 1; break; }
+                if(b[tempi][tempj] == wbishop*ss)
+                {
+                    checkresult = 1; break;
+                }
+                if(b[tempi][tempj] == 1) {checkresult = 1; break; }
+                if(b[tempi][tempj] == wqueen*ss) {checkresult = 1; break; }
+                if(b[tempi][tempj] == wqueen*ss) {checkresult = 1; break; }
+                if(b[tempi][tempj] == wqueen*ss) {checkresult = 1; break; }
+
+            }
+        }
+
+        return checkresult;
+    }
+
+    public int findcheck(int turn, int b[][])
+    {
+        int found = 0;
+        int bki = 0, bkj = 0, wki = 0, wkj = 0;
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                if(b[i][j] == wking) { wki = i; wkj = j; }
+                else if(b[i][j] == bking) { bki = i; bkj = j; }
+            }
+        }
+        // check for white
+        if(turn > 0)
+        {
+            int inci = -1, incj = -1;
+            // upleft
+            checkdir(turn, b, wki, wkj, inci, incj);
+
+        }
+        else if(turn < 0)
+        {
+
+        }
+        return found;
     }
 
 
@@ -424,6 +574,8 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
                 {
                     // make the move if possible
                     playmove(holdi, holdj,curi,curj);
+                    // find if the king is under check
+                    int ischeck = findcheck(turn, board);
                 }
             }
         }
@@ -452,6 +604,7 @@ public class boardact extends AppCompatActivity implements View.OnClickListener{
                 {
                     // make the move if possible
                     playmove(holdi, holdj,curi,curj);
+                    int ischeck = findcheck(turn, board);
                 }
             }
         }
