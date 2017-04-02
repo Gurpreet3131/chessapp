@@ -8,6 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/back"
     tools:context="com.example.dragneel.chessapp.choice">
 
     <LinearLayout
@@ -21,7 +22,6 @@
         android:layout_centerInParent="false"
         android:layout_centerVertical="false"
         android:gravity="bottom"
-        android:background="@drawable/back"
         android:weightSum="1">
 
 

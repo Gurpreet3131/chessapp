@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         settingbutton = (Button) findViewById(R.id.settingbutton);
         settingbutton.setOnClickListener(this);
 
+
         bobj = new boardact();
 
     }
